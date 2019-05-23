@@ -7,25 +7,23 @@ namespace Sunat.Cdr.Service
 {
     public class CdrService
     {
-        private readonly string _ruc;
-        private readonly string _user;
-        private readonly string _password;
+        private readonly ClaveSol _config;
 
-        public CdrService(string ruc, string user, string password)
+        public string ServiceUrl { get; set; }
+
+        public CdrService(ClaveSol config)
         {
-            _ruc = ruc;
-            _user = user;
-            _password = password;
+            _config = config;
         }
 
         public async Task<statusResponse> GetCdr(string ruc, string tipo, string serie, int numero)
         {
             var myBinding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
 
-            var myEndpoint = new EndpointAddress("https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService");
+            var myEndpoint = new EndpointAddress(ServiceUrl);
             var credential = new ClientCredentials
             {
-                UserName = { UserName = _ruc + _user, Password = _password }
+                UserName = { UserName = _config.Ruc + _config.User, Password = _config.Password }
             };
 
             ChannelFactory<billService> myChannelFactory = new ChannelFactory<billService>(myBinding, myEndpoint);
